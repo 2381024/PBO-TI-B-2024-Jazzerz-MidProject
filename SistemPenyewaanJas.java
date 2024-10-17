@@ -93,7 +93,7 @@ public class SistemPenyewaanJas {
                 }
                 case 3:{
                     // Lihat Keranjang & Biaya Sewa & Checkout dimasukkan ke dalam riwayat penyewaan jas
-                    lihatKeranjang(); // Arthur
+                    lihatKeranjang();
                     checkout(scanner);
                     // Arthur
                 }
