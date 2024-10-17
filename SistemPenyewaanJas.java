@@ -245,7 +245,7 @@ public class SistemPenyewaanJas {
             return durasi;
         }
     }
-}
+
     public static void sewaJas(Scanner scanner) {
         System.out.println("Pilih jas yang ingin disewa:");
         int i = 1;
@@ -318,5 +318,4 @@ public class SistemPenyewaanJas {
             System.out.println(namaJas + " - Rp " + daftarJas.get(namaJas) + "/hari");
         }
     }
-}
 }
