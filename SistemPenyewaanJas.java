@@ -2,9 +2,13 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Scanner;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class SistemPenyewaanJas {
     public static final String fileName = "users.txt";
+    public static ArrayList<Jas> keranjang = new ArrayList<>();
+    public static HashMap<String, Integer> daftarJas = new HashMap<>();
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -16,6 +20,9 @@ public class SistemPenyewaanJas {
         boolean admin;
         boolean daftar;
         boolean check = true;
+        daftarJas.put("Jas Hitam", 100000);
+        daftarJas.put("Jas Biru", 120000);
+        daftarJas.put("Jas Abu-abu", 110000);
 
         System.out.print("Apakah anda seorang admin?(true,false): ");
         admin = scanner.nextBoolean();
@@ -80,11 +87,14 @@ public class SistemPenyewaanJas {
                 }
                 case 2:{
                     // Sewa Jas & Masukkan keranjang dll
+                    sewaJas(scanner);
                     // Arthur
 
                 }
                 case 3:{
                     // Lihat Keranjang & Biaya Sewa & Checkout dimasukkan ke dalam riwayat penyewaan jas
+                    lihatKeranjang(); // Arthur
+                    checkout(scanner);
                     // Arthur
                 }
                 case 4:{
@@ -212,4 +222,101 @@ public class SistemPenyewaanJas {
         System.out.println("4. Pengembalian jas");
         System.out.println("5. Riwayat penyewaan jas");
     }
+    class Jas {
+        private String nama;
+        private int harga;
+        private int durasi;
+
+        public Jas(String nama, int harga, int durasi) {
+            this.nama = nama;
+            this.harga = harga;
+            this.durasi = durasi;
+        }
+
+        public String getNama() {
+            return nama;
+        }
+
+        public int getHarga() {
+            return harga;
+        }
+
+        public int getDurasi() {
+            return durasi;
+        }
+    }
+}
+    public static void sewaJas(Scanner scanner) {
+        System.out.println("Pilih jas yang ingin disewa:");
+        int i = 1;
+        for (String namaJas : daftarJas.keySet()) {
+            System.out.println(i + ". " + namaJas + " - Rp " + daftarJas.get(namaJas) + "/hari");
+            i++;
+        }
+        System.out.print("Masukkan pilihan jas (angka): ");
+        int pilihanJas = scanner.nextInt();
+        scanner.nextLine();  // Clear buffer
+        System.out.print("Masukkan durasi sewa (hari): ");
+        int durasi = scanner.nextInt();
+        scanner.nextLine();  // Clear buffer
+
+        String namaJas = (String) daftarJas.keySet().toArray()[pilihanJas - 1];
+        int harga = daftarJas.get(namaJas);
+        Jas jas = new Jas(namaJas, harga, durasi);
+        keranjang.add(jas);
+        System.out.println("Jas berhasil ditambahkan ke keranjang.");
+    }
+
+    public static void lihatKeranjang() {
+        if (keranjang.isEmpty()) {
+            System.out.println("Keranjang kosong.");
+            return;
+        }
+        int totalBiaya = 0;
+        System.out.println("Keranjang Anda:");
+        for (Jas jas : keranjang) {
+            int biaya = jas.getHarga() * jas.getDurasi();
+            totalBiaya += biaya;
+            System.out.println(jas.getNama() + " - Rp " + jas.getHarga() + "/hari x " + jas.getDurasi() + " hari = Rp " + biaya);
+        }
+        System.out.println("Total biaya sewa: Rp " + totalBiaya);
+    }
+
+    public static void checkout(Scanner scanner) {
+        lihatKeranjang();
+        System.out.println("Pilih metode pembayaran:");
+        System.out.println("1. E-Wallet");
+        System.out.println("2. Transfer Bank");
+        System.out.println("3. Cash");
+        System.out.println("4. Credit Card");
+        int metodePembayaran = scanner.nextInt();
+        scanner.nextLine();  // Clear buffer
+        switch (metodePembayaran) {
+            case 1:
+                System.out.println("Pembayaran menggunakan E-Wallet diproses...");
+                break;
+            case 2:
+                System.out.println("Pembayaran menggunakan Transfer Bank diproses...");
+                break;
+            case 3:
+                System.out.println("Pembayaran menggunakan Cash diproses...");
+                break;
+            case 4:
+                System.out.println("Pembayaran menggunakan Credit Card diproses...");
+                break;
+            default:
+                System.out.println("Metode pembayaran tidak valid.");
+                return;
+        }
+        System.out.println("Pembayaran sukses. Terima kasih sudah menyewa di Jazzerz!");
+        keranjang.clear();  // Kosongkan keranjang setelah pembayaran
+    }
+
+    public static void lihatDaftarJas() {
+        System.out.println("Daftar Jas yang tersedia:");
+        for (String namaJas : daftarJas.keySet()) {
+            System.out.println(namaJas + " - Rp " + daftarJas.get(namaJas) + "/hari");
+        }
+    }
+}
 }
