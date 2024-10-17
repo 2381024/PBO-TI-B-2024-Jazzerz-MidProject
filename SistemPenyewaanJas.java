@@ -255,10 +255,10 @@ public class SistemPenyewaanJas {
         }
         System.out.print("Masukkan pilihan jas (angka): ");
         int pilihanJas = scanner.nextInt();
-        scanner.nextLine();  // Clear buffer
+        scanner.nextLine();
         System.out.print("Masukkan durasi sewa (hari): ");
         int durasi = scanner.nextInt();
-        scanner.nextLine();  // Clear buffer
+        scanner.nextLine();
 
         String namaJas = (String) daftarJas.keySet().toArray()[pilihanJas - 1];
         int harga = daftarJas.get(namaJas);
@@ -290,7 +290,7 @@ public class SistemPenyewaanJas {
         System.out.println("3. Cash");
         System.out.println("4. Credit Card");
         int metodePembayaran = scanner.nextInt();
-        scanner.nextLine();  // Clear buffer
+        scanner.nextLine();
         switch (metodePembayaran) {
             case 1:
                 System.out.println("Pembayaran menggunakan E-Wallet diproses...");
