@@ -607,7 +607,7 @@ public class SistemPenyewaanJas {
             if (pilihan == 1) {
                 kembaliKeMenu = true;
             } else {
-                System.out.println("Pilihan tidak valid.")
+                System.out.println("Pilihan tidak valid.");
             }
         }
     }
