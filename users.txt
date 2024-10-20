@@ -1,3 +1,4 @@
 arvel,123
 andrew,123
 arthur,123
+andrew,Jas Hitam,100000,3

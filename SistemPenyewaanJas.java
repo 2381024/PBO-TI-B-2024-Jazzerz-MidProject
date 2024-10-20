@@ -1,5 +1,7 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 import java.io.*;
 import java.util.ArrayList;
@@ -76,6 +78,7 @@ public class SistemPenyewaanJas {
             //-----------------------------------------------
 
             boolean kembaliKeMenu = false;
+            bacaRiwayatDariFile(username);  // Membaca riwayat penyewaan dari file saat login
             while (!kembaliKeMenu) {
                 mainMenuUser(username);
                 System.out.println("Masukkan pilihan anda: ");
@@ -88,20 +91,20 @@ public class SistemPenyewaanJas {
                         break;
                     }
                     case 2: {
-                        sewaJas(scanner);
+                        sewaJas(scanner, username);
                         break;
                     }
                     case 3: {
                         lihatKeranjang(scanner);
-                        checkout(scanner);
+                        checkout(scanner, username);
                         break;
                     }
                     case 4: {
-                        pengembalianJas(scanner);
+                        pengembalianJas(scanner, username);
                         break;
                     }
                     case 5: {
-                        riwayatPenyewaan(scanner);
+                        riwayatPenyewaan(scanner, username);
                         break;
                     }
                     case 6: {
@@ -231,6 +234,56 @@ public class SistemPenyewaanJas {
     }
 
     // ----------------------------------------------------------------------------------------------------------
+    // Fungsi untuk menyimpan riwayat penyewaan ke file
+    public static void simpanRiwayatKeFile(String username) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
+            for (Jas jas : riwayatPenyewaan) {
+                writer.write(username + "," + jas.getNama() + "," + jas.getHarga() + "," + jas.getDurasi());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ----------------------------------------------------------------------------------------------------------
+    // Fungsi untuk membaca riwayat penyewaan dari file untuk pengguna
+    public static void bacaRiwayatDariFile(String username) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            riwayatPenyewaan.clear();
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data[0].equals(username) && data.length == 4) {
+                    Jas jas = new Jas(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]));
+                    riwayatPenyewaan.add(jas);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ----------------------------------------------------------------------------------------------------------
+    // Fungsi untuk membaca semua transaksi (admin)
+    public static void bacaSemuaTransaksi() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            riwayatPenyewaan.clear();  // Bersihkan riwayat sebelumnya untuk menghindari duplikasi
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data.length == 4) {
+                    // Data format: username, namaJas, harga, durasi
+                    Jas jas = new Jas(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]));
+                    riwayatPenyewaan.add(jas);  // Tambahkan semua transaksi ke riwayatPenyewaan
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ----------------------------------------------------------------------------------------------------------
     // Menu Utama Pengguna
 
     public static void mainMenuUser(String username) {
@@ -273,7 +326,7 @@ public class SistemPenyewaanJas {
     // ----------------------------------------------------------------------------------------------------------
     // Fitur Sewa Jas
 
-    public static void sewaJas(Scanner scanner) {
+    public static void sewaJas(Scanner scanner, String username) {
         boolean kembaliKeMenu = false;
 
         while (!kembaliKeMenu) {
@@ -299,6 +352,8 @@ public class SistemPenyewaanJas {
                 int harga = daftarJas.get(namaJas);
                 Jas jas = new Jas(namaJas, harga, durasi);
                 keranjang.add(jas);
+                riwayatPenyewaan.add(jas);  // Tambahkan ke riwayat penyewaan
+                simpanRiwayatKeFile(username); // Simpan riwayat penyewaan ke file
                 System.out.println("Jas berhasil ditambahkan ke keranjang.");
             } else {
                 System.out.println("Pilihan tidak valid, coba lagi.");
@@ -341,7 +396,7 @@ public class SistemPenyewaanJas {
     // ----------------------------------------------------------------------------------------------------------
     // Fitur Checkout
 
-    public static void checkout(Scanner scanner) {
+    public static void checkout(Scanner scanner, String username) {
         boolean kembaliKeMenu = false;
 
         while (!kembaliKeMenu) {
@@ -385,7 +440,7 @@ public class SistemPenyewaanJas {
     // ----------------------------------------------------------------------------------------------------------
     // Fitur Riwayat Penyewaan Jas
 
-    public static void riwayatPenyewaan(Scanner scanner) {
+    public static void riwayatPenyewaan(Scanner scanner, String username) {
         boolean kembaliKeMenu = false;
 
         while (!kembaliKeMenu) {
@@ -413,7 +468,7 @@ public class SistemPenyewaanJas {
     // ----------------------------------------------------------------------------------------------------------
     // Fitur Pengembalian Jas
 
-    public static void pengembalianJas(Scanner scanner) {
+    public static void pengembalianJas(Scanner scanner, String username) {
         boolean kembaliKeMenu = false;
 
         while (!kembaliKeMenu) {
@@ -434,6 +489,7 @@ public class SistemPenyewaanJas {
                 } else if (pilihan > 0 && pilihan <= riwayatPenyewaan.size()) {
                     Jas dikembalikan = riwayatPenyewaan.remove(pilihan - 1);
                     System.out.println("Jas " + dikembalikan.getNama() + " telah dikembalikan.");
+                    simpanRiwayatKeFile(username);  // Update riwayat di file setelah pengembalian
                 } else {
                     System.out.println("Pilihan tidak valid.");
                 }
@@ -496,6 +552,8 @@ public class SistemPenyewaanJas {
 
         while (!kembaliKeMenu) {
             System.out.println("Laporan Transaksi:");
+            bacaSemuaTransaksi();  // Baca semua transaksi dari file untuk laporan admin
+
             if (riwayatPenyewaan.isEmpty()) {
                 System.out.println("Belum ada transaksi.");
             } else {
