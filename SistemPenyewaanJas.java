@@ -9,6 +9,7 @@ public class SistemPenyewaanJas {
     public static final String fileName = "users.txt";
     public static ArrayList<Jas> keranjang = new ArrayList<>();
     public static HashMap<String, Integer> daftarJas = new HashMap<>();
+    public static ArrayList<Jas> riwayatPenyewaan = new ArrayList<>();
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -26,13 +27,13 @@ public class SistemPenyewaanJas {
 
         System.out.print("Apakah anda seorang admin?(true,false): ");
         admin = scanner.nextBoolean();
+        scanner.nextLine();  // Konsumsi newline setelah nextBoolean()
 
         if (!admin) {
             // Login user
             do {
                 pilihLogin = loginAtauDaftar();
-            }
-            while (pilihLogin == "");
+            } while (pilihLogin.equals(""));
 
             do {
                 switch (pilihLogin) {
@@ -52,7 +53,6 @@ public class SistemPenyewaanJas {
                             pilihLogin = "daftar";
                         }
                         break;
-
                     }
 
                     case "daftar": {
@@ -71,53 +71,76 @@ public class SistemPenyewaanJas {
                     case "keluar":
                         return;
                 }
-            }
-            while (!login);
+            } while (!login);
 
             //-----------------------------------------------
 
-            mainMenuUser(username);
-            System.out.println("Masukkan pilihan anda: ");
-            pilihMenu = scanner.nextInt();
+            boolean kembaliKeMenu = false;
+            while (!kembaliKeMenu) {
+                mainMenuUser(username);
+                System.out.println("Masukkan pilihan anda: ");
+                pilihMenu = scanner.nextInt();
+                scanner.nextLine();  // Konsumsi newline setelah nextInt()
 
-            switch(pilihMenu){
-                case 1:{
-                    // Daftar Jas
-                    // Arvel
-                }
-                case 2:{
-                    // Sewa Jas & Masukkan keranjang dll
-                    sewaJas(scanner);
-                    // Arthur
-
-                }
-                case 3:{
-                    // Lihat Keranjang & Biaya Sewa & Checkout dimasukkan ke dalam riwayat penyewaan jas
-                    lihatKeranjang();
-                    checkout(scanner);
-                    // Arthur
-                }
-                case 4:{
-                    // Pengembalian Jas & Mengganti dari riwayat penyewaan jas
-                    // Andrew
-                }
-                case 5:{
-                    // Riwayat Penyewaan Jas
-                    // Andrew
+                switch (pilihMenu) {
+                    case 1: {
+                        lihatDaftarJas(scanner);
+                        break;
+                    }
+                    case 2: {
+                        sewaJas(scanner);
+                        break;
+                    }
+                    case 3: {
+                        lihatKeranjang(scanner);
+                        checkout(scanner);
+                        break;
+                    }
+                    case 4: {
+                        pengembalianJas(scanner);
+                        break;
+                    }
+                    case 5: {
+                        riwayatPenyewaan(scanner);
+                        break;
+                    }
+                    case 6: {
+                        kembaliKeMenu = true;
+                        break;
+                    }
+                    default:
+                        System.out.println("Pilihan tidak valid.");
                 }
             }
-
         } else {
-            // Manajemen admin (CRUD)
-            // Andrew
+            // Manajemen admin (CRUD) dan Laporan Transaksi
+            boolean kembaliKeMenu = false;
+            while (!kembaliKeMenu) {
+                System.out.println("1. Manajemen Stok Jas");
+                System.out.println("2. Laporan Transaksi");
+                System.out.println("3. Kembali ke menu utama");
+                int pilihAdmin = scanner.nextInt();
+                scanner.nextLine();  // Konsumsi newline setelah nextInt()
 
-            // Laporan Transaksi
-            // Andrew
+                switch (pilihAdmin) {
+                    case 1:
+                        manajemenStokJas(scanner);
+                        break;
+                    case 2:
+                        laporanTransaksi(scanner);
+                        break;
+                    case 3:
+                        kembaliKeMenu = true;
+                        break;
+                    default:
+                        System.out.println("Pilihan tidak valid.");
+                }
+            }
         }
     }
 
     // ------------------------------------------------------------------------------------------------------
-    // Login Page Code
+    // Kode Login dan Pendaftaran
 
     public static String loginAtauDaftar() {
         Scanner scanner = new Scanner(System.in);
@@ -130,6 +153,7 @@ public class SistemPenyewaanJas {
         System.out.print("Masukkan pilihan anda: ");
 
         int pilihAkun = scanner.nextInt();
+        scanner.nextLine();  // Konsumsi newline setelah nextInt()
 
         switch (pilihAkun) {
             case 1:
@@ -147,18 +171,13 @@ public class SistemPenyewaanJas {
         return loginAtauDaftar;
     }
 
-
     public static boolean noAccountCheck() {
         Scanner scanner = new Scanner(System.in);
         boolean check;
         System.out.print("Belum ada akun? (true,false): ");
         check = scanner.nextBoolean();
-        if (check) {
-            System.out.println();
-            return true;
-        } else {
-            return false;
-        }
+        scanner.nextLine();  // Konsumsi newline setelah nextBoolean()
+        return check;
     }
 
     public static Boolean loginUser(String username, String password) {
@@ -212,7 +231,7 @@ public class SistemPenyewaanJas {
     }
 
     // ----------------------------------------------------------------------------------------------------------
-    // Main Menu User Code
+    // Menu Utama Pengguna
 
     public static void mainMenuUser(String username) {
         System.out.println("Halo, " + username + ". Apa yang kamu mau lakukan hari ini?");
@@ -221,8 +240,13 @@ public class SistemPenyewaanJas {
         System.out.println("3. Lihat Keranjang jas");
         System.out.println("4. Pengembalian jas");
         System.out.println("5. Riwayat penyewaan jas");
+        System.out.println("6. Kembali ke menu utama");
     }
-    class Jas {
+
+    // ----------------------------------------------------------------------------------------------------------
+    // Kelas Jas dideklarasikan sebagai static
+
+    static class Jas {
         private String nama;
         private int harga;
         private int durasi;
@@ -246,76 +270,277 @@ public class SistemPenyewaanJas {
         }
     }
 
+    // ----------------------------------------------------------------------------------------------------------
+    // Fitur Sewa Jas
+
     public static void sewaJas(Scanner scanner) {
-        System.out.println("Pilih jas yang ingin disewa:");
-        int i = 1;
-        for (String namaJas : daftarJas.keySet()) {
-            System.out.println(i + ". " + namaJas + " - Rp " + daftarJas.get(namaJas) + "/hari");
-            i++;
-        }
-        System.out.print("Masukkan pilihan jas (angka): ");
-        int pilihanJas = scanner.nextInt();
-        scanner.nextLine();
-        System.out.print("Masukkan durasi sewa (hari): ");
-        int durasi = scanner.nextInt();
-        scanner.nextLine();
+        boolean kembaliKeMenu = false;
 
-        String namaJas = (String) daftarJas.keySet().toArray()[pilihanJas - 1];
-        int harga = daftarJas.get(namaJas);
-        Jas jas = new Jas(namaJas, harga, durasi);
-        keranjang.add(jas);
-        System.out.println("Jas berhasil ditambahkan ke keranjang.");
+        while (!kembaliKeMenu) {
+            System.out.println("Pilih jas yang ingin disewa:");
+            int i = 1;
+            for (String namaJas : daftarJas.keySet()) {
+                System.out.println(i + ". " + namaJas + " - Rp " + daftarJas.get(namaJas) + "/hari");
+                i++;
+            }
+            System.out.println(i + ". Kembali ke menu utama"); // Pilihan untuk kembali
+            System.out.print("Masukkan pilihan (angka): ");
+            int pilihanJas = scanner.nextInt();
+            scanner.nextLine();  // Konsumsi newline setelah nextInt()
+
+            if (pilihanJas == i) {
+                kembaliKeMenu = true; // Kembali ke menu
+            } else if (pilihanJas > 0 && pilihanJas < i) {
+                System.out.print("Masukkan durasi sewa (hari): ");
+                int durasi = scanner.nextInt();
+                scanner.nextLine();  // Konsumsi newline setelah nextInt()
+
+                String namaJas = (String) daftarJas.keySet().toArray()[pilihanJas - 1];
+                int harga = daftarJas.get(namaJas);
+                Jas jas = new Jas(namaJas, harga, durasi);
+                keranjang.add(jas);
+                System.out.println("Jas berhasil ditambahkan ke keranjang.");
+            } else {
+                System.out.println("Pilihan tidak valid, coba lagi.");
+            }
+        }
     }
 
-    public static void lihatKeranjang() {
-        if (keranjang.isEmpty()) {
-            System.out.println("Keranjang kosong.");
-            return;
+    // ----------------------------------------------------------------------------------------------------------
+    // Fitur Lihat Keranjang
+
+    public static void lihatKeranjang(Scanner scanner) {
+        boolean kembaliKeMenu = false;
+
+        while (!kembaliKeMenu) {
+            if (keranjang.isEmpty()) {
+                System.out.println("Keranjang kosong.");
+            } else {
+                int totalBiaya = 0;
+                System.out.println("Keranjang Anda:");
+                for (Jas jas : keranjang) {
+                    int biaya = jas.getHarga() * jas.getDurasi();
+                    totalBiaya += biaya;
+                    System.out.println(jas.getNama() + " - Rp " + jas.getHarga() + "/hari x " + jas.getDurasi() + " hari = Rp " + biaya);
+                }
+                System.out.println("Total biaya sewa: Rp " + totalBiaya);
+            }
+            System.out.println("1. Kembali ke menu utama");
+            System.out.print("Masukkan pilihan: ");
+            int pilihan = scanner.nextInt();
+            scanner.nextLine();  // Konsumsi newline setelah nextInt()
+
+            if (pilihan == 1) {
+                kembaliKeMenu = true;
+            } else {
+                System.out.println("Pilihan tidak valid.");
+            }
         }
-        int totalBiaya = 0;
-        System.out.println("Keranjang Anda:");
-        for (Jas jas : keranjang) {
-            int biaya = jas.getHarga() * jas.getDurasi();
-            totalBiaya += biaya;
-            System.out.println(jas.getNama() + " - Rp " + jas.getHarga() + "/hari x " + jas.getDurasi() + " hari = Rp " + biaya);
-        }
-        System.out.println("Total biaya sewa: Rp " + totalBiaya);
     }
+
+    // ----------------------------------------------------------------------------------------------------------
+    // Fitur Checkout
 
     public static void checkout(Scanner scanner) {
-        lihatKeranjang();
-        System.out.println("Pilih metode pembayaran:");
-        System.out.println("1. E-Wallet");
-        System.out.println("2. Transfer Bank");
-        System.out.println("3. Cash");
-        System.out.println("4. Credit Card");
-        int metodePembayaran = scanner.nextInt();
-        scanner.nextLine();
-        switch (metodePembayaran) {
-            case 1:
-                System.out.println("Pembayaran menggunakan E-Wallet diproses...");
-                break;
-            case 2:
-                System.out.println("Pembayaran menggunakan Transfer Bank diproses...");
-                break;
-            case 3:
-                System.out.println("Pembayaran menggunakan Cash diproses...");
-                break;
-            case 4:
-                System.out.println("Pembayaran menggunakan Credit Card diproses...");
-                break;
-            default:
-                System.out.println("Metode pembayaran tidak valid.");
-                return;
+        boolean kembaliKeMenu = false;
+
+        while (!kembaliKeMenu) {
+            lihatKeranjang(scanner);
+            System.out.println("Pilih metode pembayaran:");
+            System.out.println("1. E-Wallet");
+            System.out.println("2. Transfer Bank");
+            System.out.println("3. Cash");
+            System.out.println("4. Credit Card");
+            System.out.println("5. Kembali ke menu utama");
+            int metodePembayaran = scanner.nextInt();
+            scanner.nextLine();  // Konsumsi newline setelah nextInt()
+
+            if (metodePembayaran == 5) {
+                kembaliKeMenu = true;
+            } else {
+                switch (metodePembayaran) {
+                    case 1:
+                        System.out.println("Pembayaran menggunakan E-Wallet diproses...");
+                        break;
+                    case 2:
+                        System.out.println("Pembayaran menggunakan Transfer Bank diproses...");
+                        break;
+                    case 3:
+                        System.out.println("Pembayaran menggunakan Cash diproses...");
+                        break;
+                    case 4:
+                        System.out.println("Pembayaran menggunakan Credit Card diproses...");
+                        break;
+                    default:
+                        System.out.println("Metode pembayaran tidak valid.");
+                        return;
+                }
+                System.out.println("Pembayaran sukses. Terima kasih sudah menyewa di Jazzerz!");
+                keranjang.clear();  // Kosongkan keranjang setelah pembayaran
+                kembaliKeMenu = true;
+            }
         }
-        System.out.println("Pembayaran sukses. Terima kasih sudah menyewa di Jazzerz!");
-        keranjang.clear();  // Kosongkan keranjang setelah pembayaran
     }
 
-    public static void lihatDaftarJas() {
-        System.out.println("Daftar Jas yang tersedia:");
-        for (String namaJas : daftarJas.keySet()) {
-            System.out.println(namaJas + " - Rp " + daftarJas.get(namaJas) + "/hari");
+    // ----------------------------------------------------------------------------------------------------------
+    // Fitur Riwayat Penyewaan Jas
+
+    public static void riwayatPenyewaan(Scanner scanner) {
+        boolean kembaliKeMenu = false;
+
+        while (!kembaliKeMenu) {
+            if (riwayatPenyewaan.isEmpty()) {
+                System.out.println("Belum ada riwayat penyewaan.");
+            } else {
+                System.out.println("Riwayat Penyewaan:");
+                for (Jas jas : riwayatPenyewaan) {
+                    System.out.println(jas.getNama() + " - Rp " + jas.getHarga() + "/hari x " + jas.getDurasi() + " hari");
+                }
+            }
+            System.out.println("1. Kembali ke menu utama");
+            System.out.print("Masukkan pilihan: ");
+            int pilihan = scanner.nextInt();
+            scanner.nextLine();  // Konsumsi newline setelah nextInt()
+
+            if (pilihan == 1) {
+                kembaliKeMenu = true;
+            } else {
+                System.out.println("Pilihan tidak valid.");
+            }
+        }
+    }
+
+    // ----------------------------------------------------------------------------------------------------------
+    // Fitur Pengembalian Jas
+
+    public static void pengembalianJas(Scanner scanner) {
+        boolean kembaliKeMenu = false;
+
+        while (!kembaliKeMenu) {
+            if (riwayatPenyewaan.isEmpty()) {
+                System.out.println("Tidak ada jas untuk dikembalikan.");
+            } else {
+                System.out.println("Pilih jas yang akan dikembalikan:");
+                for (int i = 0; i < riwayatPenyewaan.size(); i++) {
+                    Jas jas = riwayatPenyewaan.get(i);
+                    System.out.println((i + 1) + ". " + jas.getNama() + " - Durasi sewa: " + jas.getDurasi() + " hari");
+                }
+                System.out.println(riwayatPenyewaan.size() + 1 + ". Kembali ke menu utama");
+                int pilihan = scanner.nextInt();
+                scanner.nextLine();  // Konsumsi newline
+
+                if (pilihan == riwayatPenyewaan.size() + 1) {
+                    kembaliKeMenu = true;
+                } else if (pilihan > 0 && pilihan <= riwayatPenyewaan.size()) {
+                    Jas dikembalikan = riwayatPenyewaan.remove(pilihan - 1);
+                    System.out.println("Jas " + dikembalikan.getNama() + " telah dikembalikan.");
+                } else {
+                    System.out.println("Pilihan tidak valid.");
+                }
+            }
+        }
+    }
+
+    // ----------------------------------------------------------------------------------------------------------
+    // Fitur Manajemen Stok Jas (Admin)
+
+    public static void manajemenStokJas(Scanner scanner) {
+        boolean kembaliKeMenu = false;
+
+        while (!kembaliKeMenu) {
+            System.out.println("Manajemen Stok Jas:");
+            System.out.println("1. Tambah Jas");
+            System.out.println("2. Hapus Jas");
+            System.out.println("3. Lihat Stok Jas");
+            System.out.println("4. Kembali ke menu utama");
+
+            int pilihan = scanner.nextInt();
+            scanner.nextLine();  // Konsumsi newline
+
+            switch (pilihan) {
+                case 1:
+                    System.out.print("Masukkan nama jas: ");
+                    String namaJas = scanner.nextLine();
+                    System.out.print("Masukkan harga sewa per hari: ");
+                    int hargaJas = scanner.nextInt();
+                    daftarJas.put(namaJas, hargaJas);
+                    System.out.println("Jas berhasil ditambahkan.");
+                    break;
+
+                case 2:
+                    System.out.print("Masukkan nama jas yang akan dihapus: ");
+                    String hapusJas = scanner.nextLine();
+                    daftarJas.remove(hapusJas);
+                    System.out.println("Jas berhasil dihapus.");
+                    break;
+
+                case 3:
+                    lihatDaftarJas(scanner);
+                    break;
+
+                case 4:
+                    kembaliKeMenu = true;
+                    break;
+
+                default:
+                    System.out.println("Pilihan tidak valid.");
+            }
+        }
+    }
+
+    // ----------------------------------------------------------------------------------------------------------
+    // Fitur Laporan Transaksi (Admin)
+
+    public static void laporanTransaksi(Scanner scanner) {
+        boolean kembaliKeMenu = false;
+
+        while (!kembaliKeMenu) {
+            System.out.println("Laporan Transaksi:");
+            if (riwayatPenyewaan.isEmpty()) {
+                System.out.println("Belum ada transaksi.");
+            } else {
+                int totalPendapatan = 0;
+                for (Jas jas : riwayatPenyewaan) {
+                    int biaya = jas.getHarga() * jas.getDurasi();
+                    totalPendapatan += biaya;
+                    System.out.println(jas.getNama() + " - Rp " + jas.getHarga() + "/hari x " + jas.getDurasi() + " hari = Rp " + biaya);
+                }
+                System.out.println("Total pendapatan: Rp " + totalPendapatan);
+            }
+            System.out.println("1. Kembali ke menu utama");
+            System.out.print("Masukkan pilihan: ");
+            int pilihan = scanner.nextInt();
+            scanner.nextLine();  // Konsumsi newline setelah nextInt()
+
+            if (pilihan == 1) {
+                kembaliKeMenu = true;
+            } else {
+                System.out.println("Pilihan tidak valid.");
+            }
+        }
+    }
+
+    // ----------------------------------------------------------------------------------------------------------
+    // Fitur Lihat Daftar Jas
+
+    public static void lihatDaftarJas(Scanner scanner) {
+        boolean kembaliKeMenu = false;
+
+        while (!kembaliKeMenu) {
+            System.out.println("Daftar Jas yang tersedia:");
+            for (String namaJas : daftarJas.keySet()) {
+                System.out.println(namaJas + " - Rp " + daftarJas.get(namaJas) + "/hari");
+            }
+            System.out.println("1. Kembali ke menu utama");
+            System.out.print("Masukkan pilihan: ");
+            int pilihan = scanner.nextInt();
+            scanner.nextLine();  // Konsumsi newline setelah nextInt()
+
+            if (pilihan == 1) {
+                kembaliKeMenu = true;
+            } else {
+                System.out.println("Pilihan tidak valid.");
+            }
         }
     }
 }
