@@ -17,15 +17,12 @@ public class SistemPenyewaanJas {
         String username = "";
         String password;
         boolean login = false;
-        boolean admin;
+        boolean admin = false;
         boolean daftar;
         boolean check = true;
         daftarJas.put("Jas Hitam", 100000);
         daftarJas.put("Jas Biru", 120000);
         daftarJas.put("Jas Abu-abu", 110000);
-
-        System.out.print("Apakah anda seorang admin?(true,false): ");
-        admin = scanner.nextBoolean();
 
         if (!admin) {
             // Login user
