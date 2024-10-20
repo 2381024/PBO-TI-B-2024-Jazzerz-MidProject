@@ -254,56 +254,6 @@ public class SistemPenyewaanJas {
     }
 
     // ----------------------------------------------------------------------------------------------------------
-    // Fungsi untuk menyimpan riwayat penyewaan ke file
-    public static void simpanRiwayatKeFile(String username) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
-            for (Jas jas : riwayatPenyewaan) {
-                writer.write(username + "," + jas.getNama() + "," + jas.getHarga() + "," + jas.getDurasi());
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // ----------------------------------------------------------------------------------------------------------
-    // Fungsi untuk membaca riwayat penyewaan dari file untuk pengguna
-    public static void bacaRiwayatDariFile(String username) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-            String line;
-            riwayatPenyewaan.clear();
-            while ((line = reader.readLine()) != null) {
-                String[] data = line.split(",");
-                if (data[0].equals(username) && data.length == 4) {
-                    Jas jas = new Jas(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]));
-                    riwayatPenyewaan.add(jas);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // ----------------------------------------------------------------------------------------------------------
-    // Fungsi untuk membaca semua transaksi (admin)
-    public static void bacaSemuaTransaksi() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-            String line;
-            riwayatPenyewaan.clear();  // Bersihkan riwayat sebelumnya untuk menghindari duplikasi
-            while ((line = reader.readLine()) != null) {
-                String[] data = line.split(",");
-                if (data.length == 4) {
-                    // Data format: username, namaJas, harga, durasi
-                    Jas jas = new Jas(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]));
-                    riwayatPenyewaan.add(jas);  // Tambahkan semua transaksi ke riwayatPenyewaan
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // ----------------------------------------------------------------------------------------------------------
     // Menu Utama Pengguna
 
     public static void mainMenuUser(String username) {
@@ -317,7 +267,8 @@ public class SistemPenyewaanJas {
         System.out.println("7. Kembali ke menu utama");
     }
 
-    // ----------------------------------------------------------------------------------------------------------
+
+    // =================================================================================================================================================================================
     // Kelas Jas dideklarasikan sebagai static
 
     static class Jas {
@@ -357,24 +308,24 @@ public class SistemPenyewaanJas {
                 System.out.println(i + ". " + namaJas + " - Rp " + daftarJas.get(namaJas) + "/hari");
                 i++;
             }
-            System.out.println(i + ". Kembali ke menu utama"); // Pilihan untuk kembali
+            System.out.println(i + ". Kembali ke menu utama");
             System.out.print("Masukkan pilihan (angka): ");
             int pilihanJas = scanner.nextInt();
-            scanner.nextLine();  // Konsumsi newline setelah nextInt()
+            scanner.nextLine();
 
             if (pilihanJas == i) {
-                kembaliKeMenu = true; // Kembali ke menu
+                kembaliKeMenu = true;
             } else if (pilihanJas > 0 && pilihanJas < i) {
                 System.out.print("Masukkan durasi sewa (hari): ");
                 int durasi = scanner.nextInt();
-                scanner.nextLine();  // Konsumsi newline setelah nextInt()
+                scanner.nextLine();
 
                 String namaJas = (String) daftarJas.keySet().toArray()[pilihanJas - 1];
                 int harga = daftarJas.get(namaJas);
                 Jas jas = new Jas(namaJas, harga, durasi);
                 keranjang.add(jas);
-                riwayatPenyewaan.add(jas);  // Tambahkan ke riwayat penyewaan
-                simpanRiwayatKeFile(username); // Simpan riwayat penyewaan ke file
+                riwayatPenyewaan.add(jas);
+                simpanRiwayatKeFile(username);
                 System.out.println("Jas berhasil ditambahkan ke keranjang.");
             } else {
                 System.out.println("Pilihan tidak valid, coba lagi.");
@@ -445,7 +396,7 @@ public class SistemPenyewaanJas {
         }
     }
 
-    // ----------------------------------------------------------------------------------------------------------
+    // =================================================================================================================================================================================
     // Fitur Riwayat Penyewaan Jas
 
     public static void riwayatPenyewaan(Scanner scanner, String username) {
@@ -609,6 +560,52 @@ public class SistemPenyewaanJas {
             } else {
                 System.out.println("Pilihan tidak valid.");
             }
+        }
+    }
+
+    // Fungsi untuk membaca semua transaksi (admin)
+    public static void bacaSemuaTransaksi() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            riwayatPenyewaan.clear();  // Bersihkan riwayat sebelumnya untuk menghindari duplikasi
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data.length == 4) {
+                    // Data format: username, namaJas, harga, durasi
+                    Jas jas = new Jas(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]));
+                    riwayatPenyewaan.add(jas);  // Tambahkan semua transaksi ke riwayatPenyewaan
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Fungsi untuk menyimpan riwayat penyewaan ke file
+    public static void simpanRiwayatKeFile(String username) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
+            for (Jas jas : riwayatPenyewaan) {
+                writer.write(username + "," + jas.getNama() + "," + jas.getHarga() + "," + jas.getDurasi());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void bacaRiwayatDariFile(String username) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            riwayatPenyewaan.clear();
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data[0].equals(username) && data.length == 4) {
+                    Jas jas = new Jas(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]));
+                    riwayatPenyewaan.add(jas);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
